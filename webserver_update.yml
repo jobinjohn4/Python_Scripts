@@ -1,24 +1,18 @@
----
-- name: Update Apache2 on Ubuntu Server
-  hosts: webservers
-  become: yes  # run with sudo privileges
+- name: Upload new code and Restart the service
+  hosts: 13.58.234.166
+  vars:
+    app: apache2
+
   tasks:
-    - name: Update apt package index
-      apt:
-        update_cache: yes
+    - name: Place custom HTML File
+      copy:
+        src: /var/lib/jenkins/workspace/website-update/index.html
+        dest: /var/www/html/index.html
+      become: true
 
-    - name: Install or update Apache2 to the latest version
-      apt:
-        name: apache2
-        state: latest
-
-    - name: Ensure Apache2 is running and enabled on boot
-      service:
-        name: apache2
-        state: started
-        enabled: yes
-
-    - name: Restart Apache2 to apply updates
+    - name: Start the service
       service:
         name: apache2
         state: restarted
+        enabled: yes
+      become: true
